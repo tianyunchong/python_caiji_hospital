@@ -2,10 +2,12 @@
 # coding=utf-8
 import urllib2
 import json
-import sys
+import sys,os
+sys.path.append(os.path.dirname(os.getcwd()))
 from models.hospital import Hospital
 from models.baseModel import session
 reload(sys)
+
 sys.setdefaultencoding("utf-8")
 url = 'http://map.baidu.com/?newmap=1&reqflag=pcmap&biz=1&from=webmap&da_par=after_baidu&pcevaname=pc4.1&qt=spot&' \
       'from=webmap&c=268&wd=%E5%8C%BB%E9%99%A2&wd2=&pn=0&nn=0&db=0&sug=0&addr=0&pl_data_type=hospital&' \
