@@ -5,7 +5,15 @@ from sqlalchemy import Column
 from sqlalchemy.types import CHAR, Integer, String, VARCHAR
 from models.baseModel import session
 import sys
-
+'''
+CREATE TABLE `baidu_rel` (
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `hostid` int(11) DEFAULT NULL COMMENT '医院信息id',
+  `streetid` char(30) DEFAULT NULL COMMENT '街景图id',
+  `poiuid` char(30) DEFAULT NULL COMMENT 'poi信息点唯一标识',
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM AUTO_INCREMENT=437 DEFAULT CHARSET=utf8;
+'''
 class BaiduRel(BaseModel):
     __tablename__ = "baidu_rel"
 
