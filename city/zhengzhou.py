@@ -6,9 +6,41 @@ import sys,os
 sys.path.append(os.path.dirname(os.getcwd()))
 from models.hospital import Hospital
 from models.baseModel import session
+from models.baidurel import BaiduRel
 reload(sys)
-
 sys.setdefaultencoding("utf-8")
+
+'''
+增加百度相关信息
+baiduid 医院信息主键id
+item 获取的医院基本信息
+'''
+def insert_baidu_rel(baidu_id, item):
+    baiduRelObj = BaiduRel()
+    id = baiduRelObj.get_id_by_hostid(baidu_id)
+    if id:
+        return 0
+    baiduRelObj.hostid = baidu_id
+    baiduRelObj.streetid = item["street_id"] if item.has_key("street_id") else ""
+    baiduRelObj.poiuid   = item["uid"]
+    session.add(baiduRelObj)
+    session.commit()
+'''
+增加医院记录信息
+'''
+def insert_hospital(item):
+    hospital = Hospital()
+    id = hospital.exist(item["name"])
+    if id:
+        return id
+    print "%s is write to database" % item["name"]
+    hospital.name = item["name"]
+    hospital.address = item["address"]
+    hospital.location = json.dumps(item["location"], encoding="utf-8")
+    session.add(hospital)
+    session.commit()
+    return hospital.id
+
 #
 #  http://lbsyun.baidu.com/index.php?title=webapi/guide/webservice-placeapi
 #
@@ -26,14 +58,8 @@ for i in range(0, 200):
     #result is empty, break
     if not jsonStr["results"]:
         break
-    #print json.dumps(jsonStr, ensure_ascii=False, encoding="utf-8")
     for item in jsonStr["results"]:
-        hospital = Hospital()
-        if hospital.exist(item["name"]):
-            continue
-        # 将医院的信息存储入库
-        print "%s is write to database" % item["name"]
-        hospital.name = item["name"]
-        hospital.address = item["address"]
-        session.add(hospital)
-        session.commit()
+        baidu_id = insert_hospital(item)
+        insert_baidu_rel(baidu_id, item)
+
+
