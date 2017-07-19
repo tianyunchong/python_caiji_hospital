@@ -11,8 +11,9 @@ CREATE TABLE `hospital` (
   `name` varchar(255) DEFAULT NULL COMMENT '医院名称',
   `address` varchar(255) DEFAULT NULL COMMENT '详细地址',
   `location` varchar(100) DEFAULT NULL COMMENT '经纬度',
+  `telephone` varchar(50) DEFAULT NULL COMMENT '联系电话',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=437 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=397 DEFAULT CHARSET=utf8;
 '''
 class Hospital(BaseModel):
     __tablename__ = 'hospital'
@@ -25,6 +26,8 @@ class Hospital(BaseModel):
     address = Column(VARCHAR(255))
     # 经纬度,json字符串
     location = Column(VARCHAR(100))
+    # 电话
+    telephone = Column(VARCHAR(50))
 
     def exist(self, name):
         '''check info is exist'''

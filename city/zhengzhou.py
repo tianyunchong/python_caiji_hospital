@@ -35,11 +35,20 @@ def insert_baidu_rel(baidu_id, item):
     if id:
         return 0
     detail_dict = get_poi_detail(item["uid"])
-    print detail_dict
-    sys.exit()
     baiduRelObj.hostid = baidu_id
     baiduRelObj.streetid = item["street_id"] if item.has_key("street_id") else ""
     baiduRelObj.poiuid   = item["uid"]
+    baiduRelObj.service_rating = detail_dict["service_rating"]
+    baiduRelObj.comment_num = detail_dict["comment_num"]
+    baiduRelObj.price = detail_dict["price"]
+    baiduRelObj.image_num = detail_dict["image_num"]
+    baiduRelObj.tag = detail_dict["tag"]
+    baiduRelObj.navi_location = json.dumps(detail_dict["navi_location"], encoding="UTF-8") if detail_dict.has_key("navi_location") else ""
+    baiduRelObj.technology_rating = detail_dict["technology_rating"]
+    baiduRelObj.detail_url = detail_dict["detail_url"]
+    baiduRelObj.type = detail_dict["type"]
+    baiduRelObj.shop_hours = detail_dict["shop_hours"] if detail_dict.has_key("shop_hours") else ""
+    baiduRelObj.description = detail_dict["description"] if detail_dict.has_key("description") else ""
     session.add(baiduRelObj)
     session.commit()
 '''
@@ -54,6 +63,7 @@ def insert_hospital(item):
     hospital.name = item["name"]
     hospital.address = item["address"]
     hospital.location = json.dumps(item["location"], encoding="utf-8")
+    hospital.telephone = item["telephone"] if item.has_key("telephone") else ""
     session.add(hospital)
     session.commit()
     return hospital.id
