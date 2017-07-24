@@ -12,6 +12,7 @@ from models.baseModel import session
 from models.hospital import Hospital
 from sqlalchemy import text
 from dazhongdianping.search import Search
+from dazhongdianping.detail import Detail
 
 id = 0
 while 1:
@@ -22,4 +23,9 @@ while 1:
     name = item[0].name
     # 开始检索大众点评搜索页面，获取匹配的页面数据
     search_obj = Search(name)
-    search_obj.get_match_detail_url()
+    detail_url = search_obj.get_match_detail_url()
+    if detail_url == "":
+        continue
+    # 提取大众点评详情页面的数据，并存入数据库
+    detail_obj = Detail(detail_url)
+    detail_base_info = detail_obj.get_base_detail()

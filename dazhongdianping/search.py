@@ -5,6 +5,8 @@ import sys,urllib2
 from bs4 import BeautifulSoup
 
 class Search(object):
+    # 要检索的关键词
+    keyword = None
     # 要检索的搜索页面
     url = None
     # 要检索的搜索页面的html内容
@@ -15,6 +17,7 @@ class Search(object):
         初始化采集的url地址
         :param keyword:
         """
+        self.keyword = keyword
         self.url = "https://www.dianping.com/search/keyword/160/0_%s" % urllib2.quote(keyword.encode("utf-8"))
 
     def get_match_detail_url(self):
@@ -26,11 +29,16 @@ class Search(object):
         #解析html获取下内容
         soup = BeautifulSoup(self.html, "lxml")
         match_html = soup.select("div[id='shop-all-list']")[0]
-        match_html = "%s" % match_html
-        fp = open("/Users/zyh/Downloads/log.html", "w")
-        fp.write(match_html)
-        fp.close()
-        sys.exit()
+        # 提取所有的所有结果，获取标题完全一致的搜索结果
+        li_list = match_html.find_all("li")
+        match_keyword = self.keyword.replace("-", "")
+        for item in li_list:
+            #获取下标题信息
+            li_title = item.h4.string
+            li_url = "https://www.dianping.com%s" % item.find_all("a")[0]["href"]
+            if li_title == match_keyword:
+                return li_url
+        return ""
 
 
     def get_search_html(self):
@@ -43,4 +51,4 @@ class Search(object):
             "Referer": "https://www.dianping.com/",
             'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/59.0.3071.115 Safari/537.36'
         }
-        self.html = HttpOp.get_html_data(self.url)
+        self.html = HttpOp.get_html_data(self.url, headers=headers)
