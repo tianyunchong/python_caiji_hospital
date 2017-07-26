@@ -41,13 +41,9 @@ class Detail(object):
             },
         }
         #选择器选择基本信息标签
-        print self.soup
-        baseinfo = self.soup.select("#basic-info")
-        print type(baseinfo)
-        print baseinfo
-        sys.exit()
+        baseinfo = self.soup.select("#basic-info")[0]
         #获取星级
-        baseinfo_star = baseinfo.find_all("div[class='brief-info']").childern
+        baseinfo_star = baseinfo.select("div[class='brief-info']")
         print baseinfo_star
         sys.exit()
 
@@ -57,7 +53,7 @@ class Detail(object):
         :return:
         """
         #获取下cookie信息
-        HttpOp.get_html_cookie("https://www.dianping.com/")
+        cookies = HttpOp.get_html_cookie("https://www.dianping.com/")
         headers = {
             "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8",
             "Accept-Encoding" : "gzip, deflate, br",
@@ -66,6 +62,5 @@ class Detail(object):
             "Host" : "www.dianping.com",
             'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/59.0.3071.115 Safari/537.36'
         }
-        self.html = HttpOp.get_html_data(self.url, headers=headers)
-        sys.exit()
+        self.html = HttpOp.get_html_data(self.url, headers=headers, cookies=cookies)
         self.soup = BeautifulSoup(self.html, "lxml")
