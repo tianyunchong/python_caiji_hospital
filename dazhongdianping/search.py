@@ -28,7 +28,10 @@ class Search(object):
         self.get_search_html()
         #解析html获取下内容
         soup = BeautifulSoup(self.html, "lxml")
-        match_html = soup.select("div[id='shop-all-list']")[0]
+        match_html_search = soup.select("div[id='shop-all-list']")
+        if not match_html_search:
+            return ""
+        match_html = match_html_search[0]
         # 提取所有的所有结果，获取标题完全一致的搜索结果
         li_list = match_html.find_all("li")
         match_keyword = self.keyword.replace("-", "")

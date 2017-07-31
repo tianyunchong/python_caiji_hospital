@@ -25,6 +25,7 @@ while 1:
     search_obj = Search(name)
     detail_url = search_obj.get_match_detail_url()
     if detail_url == "":
+        print "%s在大众点评中不存在" % name
         continue
     # 提取大众点评详情页面的数据，并存入数据库
     detail_obj = Detail(detail_url)
