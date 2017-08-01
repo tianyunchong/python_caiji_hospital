@@ -35,6 +35,9 @@ class Detail(object):
             "shop_star" : 0,# 大众点评商户星级
             "reviewCount" : 0,#评论数量
             "avgPrice" : 0,#人均消费
+            "address" : "",#实际地址
+            "tel" : "",#电话
+            "businessHour" : "",#营业时间
             "comment_score" : {#评分
                 "doctor" : 0,#医生评分
                 "facilities" : 0,#设施评分
@@ -62,14 +65,47 @@ class Detail(object):
         if match_avg:
             detail["avgPrice"] = match_avg[0]
         #获取下评分数据
-        baseinfo_comment = baseinfo.select("#comment_score")[0].findChildren()
+        detail["comment_score"] = self.get_base_detail_commentscore(baseinfo)
+        #获取下实际地址
+        match_addres = baseinfo.find("span", itemprop="street-address")
+        if match_addres:
+            detail["address"] =  match_addres.text.strip()
+        #获取下电话号码
+        match_tel = baseinfo.find("span", itemprop="tel")
+        if match_tel:
+            detail["tel"] = match_tel.text.strip()
+        #获取其他信息数组
+        match_other = baseinfo.find("div", class_=["other", "J-other"])
+        match_other_children = match_other.findChildren("p") if match_other else None
+        for item in match_other_children:
+            item_children = item.findChildren("span")
+            if len(item_children) < 2:
+                continue
+            if item_children[0].text == u"营业时间：":
+                detail["businessHour"] = item_children[1].text.strip()
+        return detail
+
+    def get_base_detail_commentscore(self, baseinfo):
+        """
+        获取评分数据信息
+        :param baseinfo:
+        :return:
+        """
+        comment_info = {"doctor":0, "facilities":0, "guahao":0}
+        baseinfo_comment_ele = baseinfo.select("#comment_score")
+        if len(baseinfo_comment_ele) < 1:
+            return comment_info
+        baseinfo_comment = baseinfo_comment_ele[0].findChildren("span")
         for item in baseinfo_comment:
             item_text = item.text
-            #正则匹配下医生的评分
-            
-            #正则匹配获取下设施的评分
-            #正则匹配获取下挂号的评分
-        sys.exit()
+            match_avg = re.findall(r"(医生|设施|挂号)：([\d\.]+)", item_text.encode("utf-8"))
+            if match_avg and match_avg[0][0].encode("utf-8") == "医生":
+                comment_info["doctor"] = match_avg[0][1]
+            elif match_avg and match_avg[0][0].encode("utf-8") == "设施":
+                comment_info["facilities"] = match_avg[0][1]
+            elif match_avg and match_avg[0][0].encode("utf-8") == "挂号":
+                comment_info["guahao"] = match_avg[0][1]
+        return comment_info
 
     def get_content_html(self):
         """

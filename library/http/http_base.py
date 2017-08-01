@@ -16,6 +16,8 @@ class HttpOp(object):
         获取下html内容
         """
         r = requests.get(url, headers=headers, cookies=cookies)
+        if r.status_code != 200:
+            return ""
         html = r.text.encode(r.encoding).decode("utf-8")
         return html
 
