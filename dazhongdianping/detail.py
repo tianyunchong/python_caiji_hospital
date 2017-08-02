@@ -44,8 +44,12 @@ class Detail(object):
                 "guahao" : 0,#挂号评分
             },
         }
+        baseinfo_ele = self.soup.select("#basic-info")
+        if not baseinfo_ele:
+            return detail
+        print self.url
         #选择器选择基本信息标签
-        baseinfo = self.soup.select("#basic-info")[0]
+        baseinfo = baseinfo_ele[0]
         #获取星级
         baseinfo_star_class = baseinfo.select("div[class='brief-info']")[0].find("span").attrs["class"]
         if len(baseinfo_star_class) < 2:
@@ -55,15 +59,9 @@ class Detail(object):
             if match_star:
                 detail["shop_star"] = match_star[0]
         #获取评论数量
-        baseinfo_review = baseinfo.select("#reviewCount")[0].text
-        match_review = re.findall(r"(.+)条评论", baseinfo_review.encode("utf-8"))
-        if match_review:
-            detail["reviewCount"] = match_review[0]
+        detail["reviewCount"] = self.get_base_detail_reviewcount(baseinfo)
         #获取人均消费
-        baseinfo_avg = baseinfo.select("#avgPriceTitle")[0].text
-        match_avg = re.findall(r"人均：\s?(\d+)元", baseinfo_avg.encode("utf-8"))
-        if match_avg:
-            detail["avgPrice"] = match_avg[0]
+        detail["avgPrice"] = self.get_base_detail_avgprice(baseinfo)
         #获取下评分数据
         detail["comment_score"] = self.get_base_detail_commentscore(baseinfo)
         #获取下实际地址
@@ -75,15 +73,57 @@ class Detail(object):
         if match_tel:
             detail["tel"] = match_tel.text.strip()
         #获取其他信息数组
+        detail["businessHour"] = self.get_base_detail_businesshour(baseinfo)
+        return detail
+
+    def get_base_detail_businesshour(self, baseinfo):
+        """
+        获取下营业时间
+        :param baseinfo:
+        :return:
+        """
         match_other = baseinfo.find("div", class_=["other", "J-other"])
         match_other_children = match_other.findChildren("p") if match_other else None
+        if not match_other_children:
+            return ""
         for item in match_other_children:
             item_children = item.findChildren("span")
             if len(item_children) < 2:
                 continue
             if item_children[0].text == u"营业时间：":
-                detail["businessHour"] = item_children[1].text.strip()
-        return detail
+                return  item_children[1].text.strip()
+        return ""
+
+    def get_base_detail_avgprice(self, baseinfo):
+        """
+        获取下人均消费
+        :param baseinfo:
+        :return:
+        """
+        baseinfo_avg_ele = baseinfo.select("#avgPriceTitle")
+        if not baseinfo_avg_ele:
+            return 0
+        baseinfo_avg = baseinfo_avg_ele[0].text
+        match_avg = re.findall(r"人均：\s?(\d+)元", baseinfo_avg.encode("utf-8"))
+        if match_avg:
+            return match_avg[0]
+        return 0
+
+    def get_base_detail_reviewcount(self, baseinfo):
+        """
+        获取下评论数量
+        :param baseinfo:
+        :return:
+        """
+        baseinfo_review_ele = baseinfo.select("#reviewCount")
+        if not baseinfo_review_ele:
+            return 0
+        baseinfo_review = baseinfo_review_ele[0].text
+        match_review = re.findall(r"(.+)条评论", baseinfo_review.encode("utf-8"))
+        if match_review:
+            return match_review[0]
+        return 0
+
 
     def get_base_detail_commentscore(self, baseinfo):
         """

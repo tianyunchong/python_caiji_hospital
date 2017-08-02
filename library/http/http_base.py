@@ -16,10 +16,9 @@ class HttpOp(object):
         获取下html内容
         """
         r = requests.get(url, headers=headers, cookies=cookies)
-        if r.status_code != 200:
+        if r.status_code != 200 or (not r.text):
             return ""
-        html = r.text.encode(r.encoding).decode("utf-8")
-        return html
+        return r.text.encode(r.encoding).decode("utf-8")
 
     @staticmethod
     def get_html_cookie(url):

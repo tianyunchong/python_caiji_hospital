@@ -7,6 +7,8 @@ from models.baseModel import session
 """
 CREATE TABLE `dianpin_rel` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `title` varchar(255) DEFAULT NULL COMMENT '医院名称',
+  `searchtitle` varchar(255) DEFAULT NULL COMMENT '大众点评搜索的名称',
   `shopstar` int(11) DEFAULT NULL COMMENT '商户星级',
   `reviewcount` int(11) DEFAULT NULL COMMENT '评论数量',
   `tel` varchar(30) DEFAULT NULL COMMENT '电话',
@@ -18,13 +20,17 @@ CREATE TABLE `dianpin_rel` (
   `guahaoscore` float DEFAULT NULL COMMENT '挂号评分',
   `infofrom` varchar(100) DEFAULT NULL COMMENT '信息来源页面地址',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=30 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 """
 class DianpinRel(BaseModel):
     __tablename__ = "dianpin_rel"
 
     #主键
     id = Column(Integer, primary_key=True)
+    #医院名称
+    title = Column(VARCHAR(255))
+    #大众点评搜索的名称
+    searchtitle = Column(VARCHAR(255))
     #商户星级
     shopstar = Column(Integer)
     #评论数量

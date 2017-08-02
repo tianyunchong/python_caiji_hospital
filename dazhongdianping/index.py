@@ -26,14 +26,16 @@ while 1:
     print "开始抓取<%s>的大众点评信息" % name
     # 开始检索大众点评搜索页面，获取匹配的页面数据
     search_obj = Search(name)
-    detail_url = search_obj.get_match_detail_url()
-    if detail_url == "":
-        print "######%s在大众点评中不存在##########" % name
+    detail_url_dict = search_obj.get_match_detail_url()
+    if not detail_url_dict:
+        print "######%s\t在大众点评中不存在##########" % name
         continue
     # 提取大众点评详情页面的数据，并存入数据库
-    detail_obj = Detail(detail_url)
+    detail_obj = Detail(detail_url_dict["url"])
     detail_base_info = detail_obj.get_base_detail()
     detail_model = DianpinRel()
+    detail_model.title = name
+    detail_model.searchtitle = detail_url_dict["searchname"]
     detail_model.shopstar = detail_base_info["shop_star"]
     detail_model.reviewcount = detail_base_info["reviewCount"]
     detail_model.tel = detail_base_info["tel"]
@@ -43,7 +45,7 @@ while 1:
     detail_model.doctorscore = detail_base_info["comment_score"]["doctor"]
     detail_model.facilitiesscore = detail_base_info["comment_score"]["facilities"]
     detail_model.guahaoscore = detail_base_info["comment_score"]["guahao"]
-    detail_model.infofrom = detail_url
+    detail_model.infofrom = detail_url_dict["url"]
     detail_model.commit()
     # 提取大众点评评论信息,并存入数据库
     # comment_obj = Comments(detail_url)
