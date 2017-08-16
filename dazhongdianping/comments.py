@@ -42,7 +42,7 @@ class Comments(object):
     def get_comment_detail(self, ul_element):
         soup_comment_li = ul_element.find_all("li", recursive=False)
         for li_key, li_item in enumerate(soup_comment_li):
-            print "开始收集第%s个评论" % li_key
+            #print "开始收集第%s个评论" % (li_key+1)
             comment_item_dict = {}
             #提取下评论的用户头像和用户名
             li_item_pic = li_item.find("div", class_="pic")
@@ -53,9 +53,9 @@ class Comments(object):
             comment_item_dict["level"] = self.get_comments_detail_level(li_item)
             # 提取下评论的详情信息
             li_item_detail = li_item.find("div", class_="J_brief-cont")
-            detail = ""
+            detail = u""
             for item_detail in li_item_detail.contents:
-                detail += str(item_detail).encode("utf-8")
+                detail += str(item_detail)
             comment_item_dict["detail"] = detail
             self.comment_list.append(comment_item_dict)
 

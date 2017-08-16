@@ -16,6 +16,8 @@ from dazhongdianping.detail import Detail
 from dazhongdianping.comments import Comments
 from dazhongdianping.pictures import Picture
 from models.dianpinrel import DianpinRel
+from models.dianpinrelcomments import DianpinRelComments
+from models.dianpinrelpictures import DianpinRelPictures
 id = 0
 while 1:
     item = session.query(Hospital).filter(text('id > :id')).params(id=id).limit(1).all()
@@ -47,10 +49,29 @@ while 1:
     detail_model.guahaoscore = detail_base_info["comment_score"]["guahao"]
     detail_model.infofrom = detail_url_dict["url"]
     detail_model.commit()
+    detail_model_id = detail_model.id
     # 提取大众点评评论信息,并存入数据库
-    # comment_obj = Comments(detail_url)
-    # comment_list = comment_obj.get_comments()
+    comment_obj = Comments(detail_url_dict["url"])
+    comment_list = comment_obj.get_comments()
+    # 循环存储下所有的评论信息
+    for item in comment_list:
+        detail_comments_model = DianpinRelComments()
+        detail_comments_model.relid = detail_model_id
+        detail_comments_model.username = item["username"].encode("utf-8")
+        detail_comments_model.avatar = item["avatar"]
+        detail_comments_model.level = item["level"]
+        detail_comments_model.comments = item["detail"].encode("utf-8")
+        detail_comments_model.commit()
     # 提取大众点评图片信息,并存入数据库
-    #pictureObj = Picture(detail_url)
-    #picture_list = pictureObj.get_picture()
-    #sys.exit()
+    pictureObj = Picture(detail_url_dict["url"])
+    picture_list = pictureObj.get_picture()
+    for item in picture_list:
+        detail_picture_model = DianpinRelPictures()
+        detail_picture_model.relid = detail_model_id
+        detail_picture_model.uptimestr = item["uptimestr"].encode("utf-8")
+        detail_picture_model.upuser = item["upuser"].encode("utf-8")
+        detail_picture_model.thumbpic = item["thumb_pic"]
+        detail_picture_model.bigpic = item["big_pic"]
+        detail_picture_model.commit()
+
+

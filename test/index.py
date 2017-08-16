@@ -21,4 +21,7 @@ b = "大桥医院"
 c = "大桥医院停车场"
 d = "小飞象母婴用品(大桥医院店)"
 e = "私人订制"
-print get_like_score(a, e)
+#print get_like_score(a, e)
+slen = len(a)
+for i in range(0, slen):
+    print a[i]

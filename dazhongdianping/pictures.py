@@ -25,7 +25,10 @@ class Picture(object):
             pic_page_url = "%s/photos?pg=%s" % (self.detail_url, i)
             pic_html = self.get_picture_html(pic_page_url)
             pic_html_soup = BeautifulSoup(pic_html, "lxml")
-            pic_ul_ele = pic_html_soup.find("div", class_="picture-list").ul
+            pic_piclist_ele = pic_html_soup.find("div", class_="picture-list")
+            if not pic_piclist_ele:
+                return self.picture_list
+            pic_ul_ele = pic_piclist_ele.ul
             if pic_ul_ele.text.strip() == "":
                 break
             #开始提取图片信息
